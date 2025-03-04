@@ -1,131 +1,101 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+const API_HOST = 'numbersapi.p.rapidapi.com';
+const API_KEY = '0822b56b40msh467f4b3cf1561aap1b1153jsn2689aea02a72';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const App: React.FC = () => {
+    const [month, setMonth] = useState<string>('');
+    const [day, setDay] = useState<string>('');
+    const [fact, setFact] = useState<string>('');
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+    useEffect(() => {
+        if (month && day) {
+            fetchFact();
+        }
+    }, [month, day]);
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+    const fetchFact = async () => {
+        try {
+            const url = `https://${API_HOST}/${month}/${day}/date`;
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-RapidAPI-Key': API_KEY,
+                    'X-RapidAPI-Host': API_HOST,
+                },
+            });
+            const text = await response.text();
+            setFact(text);
+        } catch (error) {
+            console.error('Error fetching fact:', error);
+            setFact('Failed to fetch fact');
+        }
+    };
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+    return (
+        <View style={styles.container}>
+            <Text style={styles.label}>Select Month:</Text>
+            <Picker
+                selectedValue={month}
+                onValueChange={(itemValue) => setMonth(itemValue)}
+                style={{ height: 50, width: 150 }}
+            >
+                {Array.from({ length: 12 }, (_, i) => (
+                    <Picker.Item
+                        key={i}
+                        label={new Date(0, i).toLocaleString('default', { month: 'long' })}
+                        value={(i + 1).toString()}
+                    />
+                ))}
+            </Picker>
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+            <Text style={styles.label}>Enter Day:</Text>
+            <TextInput
+                style={styles.input}
+                keyboardType='numeric'
+                value={day}
+                onChangeText={(text) => setDay(text.replace(/[^0-9]/g, ''))}
+                maxLength={2}
+            />
 
-  /*
-   * To keep the template simple and small we're adding padding to prevent view
-   * from rendering under the System UI.
-   * For bigger apps the reccomendation is to use `react-native-safe-area-context`:
-   * https://github.com/AppAndFlow/react-native-safe-area-context
-   *
-   * You can read more about it here:
-   * https://github.com/react-native-community/discussions-and-proposals/discussions/827
-   */
-  const safePadding = '5%';
-
-  return (
-    <View style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        style={backgroundStyle}>
-        <View style={{paddingRight: safePadding}}>
-          <Header/>
+            {fact ? <Text style={styles.fact}>{fact}</Text> : null}
         </View>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            paddingHorizontal: safePadding,
-            paddingBottom: safePadding,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </View>
-  );
-}
+    );
+};
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+        backgroundColor: 'white'
+    },
+    label: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginTop: 10,
+    },
+    input: {
+        width: 100,
+        height: 40,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 5,
+        paddingHorizontal: 8,
+        textAlign: 'center',
+        marginTop: 5,
+    },
+    fact: {
+        marginTop: 20,
+        fontSize: 16,
+        fontWeight: '500',
+        textAlign: 'center',
+        paddingHorizontal: 10,
+        color: 'black'
+    },
 });
 
 export default App;
