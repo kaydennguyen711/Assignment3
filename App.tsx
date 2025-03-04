@@ -45,7 +45,7 @@ const App: React.FC = () => {
                 {Array.from({ length: 12 }, (_, i) => (
                     <Picker.Item
                         key={i}
-                        label={new Date(0, i).toLocaleString('default', { month: 'long' })}
+                        label={new Date(2025, i, 1).toLocaleString('default', { month: 'long' })}
                         value={(i + 1).toString()}
                     />
                 ))}
