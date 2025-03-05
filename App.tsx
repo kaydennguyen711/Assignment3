@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: 'white'
+        backgroundColor: '#FFFFFF'
     },
     label: {
         fontSize: 18,
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 40,
         borderWidth: 1,
-        borderColor: 'gray',
+        borderColor: '#808080',
         borderRadius: 5,
         paddingHorizontal: 8,
         textAlign: 'center',
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         textAlign: 'center',
         paddingHorizontal: 10,
-        color: 'black'
+        color: '#000000'
     },
 });
 
